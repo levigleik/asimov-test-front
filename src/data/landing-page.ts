@@ -1,11 +1,5 @@
 import type { StaticImageData } from "next/image";
 
-import companyAmazon from "@/assets/images/Company-amazon.png";
-import companyDribbble from "@/assets/images/Company-dribbble.png";
-import companyHubSpot from "@/assets/images/Company-hub-spot.png";
-import companyNetflix from "@/assets/images/Company-netflix.png";
-import companyNotion from "@/assets/images/Company-notion.png";
-import companyZoom from "@/assets/images/Company-zoom.png";
 import serviceBrowserWindow from "@/assets/images/service-browser-window-with-emoticon-likes-and-stars-around.png";
 import serviceMagnifier from "@/assets/images/service-magnifier-web-search-with-elements.png";
 import serviceManyBrowsers from "@/assets/images/service-many-browser-windows-with-different-information.png";
@@ -16,11 +10,6 @@ import serviceAnalytics from "@/assets/images/service-volumetric-analytics-of-di
 export type NavigationItem = {
   href: string;
   label: string;
-};
-
-export type BrandLogo = {
-  alt: string;
-  image: StaticImageData;
 };
 
 export type ServiceItem = {
@@ -42,15 +31,6 @@ export const navigationItems: NavigationItem[] = [
   { href: "#case-studies", label: "Use Cases" },
   { href: "#cta", label: "Pricing" },
   { href: "#case-studies", label: "Blog" },
-];
-
-export const brandLogos: BrandLogo[] = [
-  { alt: "Amazon", image: companyAmazon },
-  { alt: "Dribbble", image: companyDribbble },
-  { alt: "HubSpot", image: companyHubSpot },
-  { alt: "Notion", image: companyNotion },
-  { alt: "Netflix", image: companyNetflix },
-  { alt: "Zoom", image: companyZoom },
 ];
 
 export const serviceItems: ServiceItem[] = [
