@@ -1,45 +1,92 @@
-import companyAmazon from "@/assets/images/Company-amazon.png";
-import companyZoom from "@/assets/images/Company-zoom.png";
+import Image from "next/image";
+import { ArrowLink } from "@/components/arrow-link";
+import { SectionHeader } from "@/components/section-header";
+import { serviceItems } from "@/data/landing-page";
 import { cn } from "@/utils/cn";
 
-export const SectionServices = () => {
-  const Card = ({
-    cardClassName,
-    icon,
-    title,
-  }: {
-    cardClassName: string;
-    title: string;
-    icon: React.ReactNode;
-  }) => (
-    <div
-      className={cn(
-        "flex flex-col gap-5 p-5 rounded-[7px] bg-secondary",
-        cardClassName,
-      )}
-    >
-      <h3 className="text-2xl font-medium">{title}</h3>
-      {icon}
-    </div>
-  );
+const cardToneClasses = {
+  dark: "bg-tertiary text-white",
+  light: "bg-secondary text-foreground",
+  primary: "bg-primary text-foreground",
+};
 
+const titleToneClasses = {
+  primary: "bg-primary text-foreground",
+  white: "bg-white text-foreground",
+};
+
+const defaultTitleToneByCardTone = {
+  dark: "white",
+  light: "primary",
+  primary: "white",
+} as const;
+
+export const SectionServices = () => {
   return (
-    <div className="flex flex-col min-h-screen w-360 gap-17.5">
-      {/* Header */}
-      <div className="flex flex-1 items-center gap-10">
-        <h2 className="bg-primary rounded-[7px] px-1.75 text-[40px] font-medium">
-          Services
-        </h2>
-        <p className="text-lg w-[580px]">
-          At our digital marketing agency, we offer a range of services to help
-          businesses grow and succeed online. These services include:
-        </p>
+    <section className="flex min-h-screen w-full flex-col gap-10 lg:gap-17.5">
+      <SectionHeader
+        title="Services"
+        description="At our digital marketing agency, we offer a range of services to help
+        businesses grow and succeed online. These services include:"
+      />
+      <div className="mt-10 grid gap-10 lg:mt-20 lg:grid-cols-2">
+        {serviceItems.map((item) => {
+          const titleTone =
+            item.titleTone ?? defaultTitleToneByCardTone[item.cardTone];
+
+          return (
+            <article
+              key={item.title.join("-")}
+              className={cn(
+                "rounded-[32px] border border-foreground px-8 py-8 shadow-[0_5px_0_0_var(--color-foreground)] lg:min-h-[310px] lg:rounded-[45px] lg:px-[50px] lg:py-[50px]",
+                cardToneClasses[item.cardTone],
+              )}
+            >
+              <div className="flex h-full flex-col items-center gap-8 lg:flex-row lg:justify-between">
+                <div className="contents lg:flex lg:max-w-[221px] lg:min-h-[210px] lg:flex-col lg:justify-between">
+                  <h3 className="order-1 flex flex-col items-start text-[26px] leading-none font-medium lg:order-none lg:text-[30px]">
+                    {item.title.map((line) => (
+                      <span
+                        key={line}
+                        className={cn(
+                          "rounded-[7px] px-[7px] py-0.5",
+                          titleToneClasses[titleTone],
+                        )}
+                      >
+                        {line}
+                      </span>
+                    ))}
+                  </h3>
+
+                  <ArrowLink
+                    href="#case-studies"
+                    variant={item.accent}
+                    className={cn(
+                      "order-3 lg:order-none",
+                      item.accent === "light"
+                        ? "text-white"
+                        : "text-foreground",
+                    )}
+                  >
+                    Learn more
+                  </ArrowLink>
+                </div>
+
+                <div className="order-2 flex items-center lg:order-none">
+                  <div className="w-full max-w-[210px]">
+                    <Image
+                      src={item.image}
+                      alt=""
+                      aria-hidden="true"
+                      className="h-auto w-full"
+                    />
+                  </div>
+                </div>
+              </div>
+            </article>
+          );
+        })}
       </div>
-      {/* Logotypes */}
-      <div className="flex justify-between grayscale-100">
-        <img src={companyAmazon.src} alt="Amazon" className="h-12" />
-        <img src={companyZoom.src} alt="Zoom" className="h-12" />
-      </div>
-    </div>
+    </section>
   );
 };

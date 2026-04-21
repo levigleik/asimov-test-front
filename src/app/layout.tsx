@@ -22,7 +22,7 @@ export default function RootLayout({
       lang="en"
       className={`${spaceGroteskSans.className} h-full antialiased`}
     >
-      <body className="flex flex-col min-h-screen w-full px-25">
+      <body className="min-h-screen w-full bg-background text-foreground">
         {children}
       </body>
     </html>
