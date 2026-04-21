@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fff;
+  --foreground: #000;
+  --primary: #85bb22;
+  --secondary: #f3f3f3;
+  --tertiary: #191a23;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-tertiary: var(--tertiary);
+  --font-sans: var(--font-geist-sans);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+@layer base {
+  /* H1: 43px -> 60px */
+  h1 {
+    @apply text-[43px] font-medium tracking-normal lg:text-6xl lg:leading-none;
+  }
+
+  /* H2: 36px -> 40px */
+  h2 {
+    @apply text-4xl font-medium leading-none tracking-normal lg:text-[40px];
+  }
+
+  /* H3: 26px -> 30px */
+  h3 {
+    @apply text-[26px] font-medium leading-none tracking-normal lg:text-3xl;
+  }
+
+  /* H4: 18px -> 20px */
+  h4 {
+    @apply text-lg font-medium leading-none tracking-normal lg:text-xl;
+  }
+
+  /* P (Default): 16px (LH 24px) -> 18px (LH 100%) */
+  p,
+  body {
+    @apply text-base leading-6 font-normal tracking-normal lg:text-lg lg:leading-none;
+  }
+}
