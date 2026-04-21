@@ -13,11 +13,11 @@ export const SectionLandingPage = () => {
     <section className="flex min-h-screen w-full flex-col gap-10 lg:gap-17.5">
       <Navbar />
       <div className="flex flex-1 flex-col gap-10 md:flex-row md:items-center md:justify-between md:gap-8 lg:gap-12">
-        <div className="flex max-w-[531px] flex-col gap-6 lg:gap-8.75">
+        <div className="flex max-w-132.75 flex-col gap-6 lg:gap-8.75">
           <h1 className="text-balance leading-tight">
             Navigating the digital landscape for success
           </h1>
-          <p className="max-w-[498px] text-xl leading-7">
+          <p className="max-w-124.5 text-xl leading-7">
             Our digital marketing agency helps businesses grow and succeed
             online through a range of services including SEO, PPC, social media
             marketing, and content creation.
@@ -33,7 +33,7 @@ export const SectionLandingPage = () => {
           src={illustration}
           alt="Illustration"
           priority
-          className="h-auto w-full max-w-[340px] self-start md:max-w-[400px] md:shrink md:self-end lg:max-w-[600px]"
+          className="h-auto w-full max-w-85 self-start md:max-w-100 md:shrink md:self-end lg:max-w-150"
           sizes="(min-width: 1024px) 600px, (min-width: 768px) 40vw, (min-width: 640px) 340px, 78vw"
         />
       </div>

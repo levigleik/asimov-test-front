@@ -38,18 +38,18 @@ export const SectionServices = () => {
             <article
               key={item.title.join("-")}
               className={cn(
-                "rounded-[32px] border border-foreground px-8 py-8 shadow-[0_5px_0_0_var(--color-foreground)] lg:min-h-[310px] lg:rounded-[45px] lg:px-[50px] lg:py-[50px]",
+                "rounded-4xl border border-foreground px-8 py-8 shadow-[0_5px_0_0_var(--color-foreground)] lg:min-h-77.5 lg:rounded-[45px] lg:px-12.5 lg:py-12.5",
                 cardToneClasses[item.cardTone],
               )}
             >
               <div className="flex h-full flex-col items-center gap-8 lg:flex-row lg:justify-between">
-                <div className="contents lg:flex lg:max-w-[221px] lg:min-h-[210px] lg:flex-col lg:justify-between">
+                <div className="contents lg:flex lg:max-w-55.25 lg:min-h-52.5 lg:flex-col lg:justify-between">
                   <h3 className="order-1 flex flex-col items-start text-[26px] leading-none font-medium lg:order-none lg:text-[30px]">
                     {item.title.map((line) => (
                       <span
                         key={line}
                         className={cn(
-                          "rounded-[7px] px-[7px] py-0.5",
+                          "rounded-[7px] px-1.75 py-0.5",
                           titleToneClasses[titleTone],
                         )}
                       >
@@ -73,7 +73,7 @@ export const SectionServices = () => {
                 </div>
 
                 <div className="order-2 flex items-center lg:order-none">
-                  <div className="w-full max-w-[210px]">
+                  <div className="w-full max-w-52.5">
                     <Image
                       src={item.image}
                       alt=""

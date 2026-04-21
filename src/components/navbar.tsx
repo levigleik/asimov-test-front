@@ -9,7 +9,7 @@ export const Navbar = () => {
         src={logo}
         alt="Logo"
         priority
-        className="h-auto w-[168px] sm:w-[190px] lg:w-[220px]"
+        className="h-auto w-42 sm:w-47.5 lg:w-55"
         sizes="(min-width: 1024px) 220px, (min-width: 640px) 190px, 168px"
       />
       <div className="flex flex-wrap items-center gap-x-6 gap-y-4 text-base sm:text-lg lg:justify-end lg:gap-x-10 lg:text-xl">
@@ -24,7 +24,7 @@ export const Navbar = () => {
         ))}
         <a
           href="#request-a-quote"
-          className="w-full rounded-[14px] border px-6 py-4 leading-7 sm:w-auto lg:px-8.75 lg:py-5"
+          className="rounded-[14px] border px-6 py-4 leading-7 w-auto lg:px-8.75 lg:py-5"
         >
           Request a quote
         </a>

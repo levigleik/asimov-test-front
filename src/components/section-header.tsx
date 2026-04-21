@@ -18,11 +18,11 @@ export const SectionHeader = ({
         className,
       )}
     >
-      <h2 className="w-fit rounded-[7px] bg-primary px-[7px] py-0.5 text-[36px] leading-none font-medium lg:text-[40px]">
+      <h2 className="w-fit rounded-[7px] bg-primary px-[7px] py-0.5 text-4xl leading-none font-medium lg:text-[40px]">
         {title}
       </h2>
 
-      <p className="max-w-[580px] text-base leading-[1.5] lg:text-lg lg:leading-[1.28]">
+      <p className="max-w-145 text-base leading-[1.5] lg:text-lg lg:leading-[1.28]">
         {description}
       </p>
     </div>

@@ -5,7 +5,7 @@ import { SectionServices } from "./sections/services";
 
 export default function Home() {
   return (
-    <main className="mx-auto flex w-full max-w-[1440px] flex-col gap-18 px-4 py-6 sm:px-6 sm:py-8 lg:gap-24 lg:px-25 lg:py-10">
+    <main className="mx-auto flex w-full max-w-360 flex-col gap-18 px-4 py-6 sm:px-6 sm:py-8 lg:gap-24 lg:px-25 lg:py-10">
       <SectionLandingPage />
       <SectionServices />
       <SectionLetsMakeThings />

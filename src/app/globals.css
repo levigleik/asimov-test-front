@@ -25,27 +25,27 @@ body {
 @layer base {
   /* H1: 43px -> 60px */
   h1 {
-    @apply text-[43px] lg:text-[60px] font-medium leading-[100%] tracking-normal;
+    @apply text-[43px] font-medium tracking-normal lg:text-6xl lg:leading-none;
   }
 
   /* H2: 36px -> 40px */
   h2 {
-    @apply text-[36px] lg:text-[40px] font-medium leading-[100%] tracking-normal;
+    @apply text-4xl font-medium leading-none tracking-normal lg:text-[40px];
   }
 
   /* H3: 26px -> 30px */
   h3 {
-    @apply text-[26px] lg:text-[30px] font-medium leading-[100%] tracking-normal;
+    @apply text-[26px] font-medium leading-none tracking-normal lg:text-3xl;
   }
 
   /* H4: 18px -> 20px */
   h4 {
-    @apply text-[18px] lg:text-[20px] font-medium leading-[100%] tracking-normal;
+    @apply text-lg font-medium leading-none tracking-normal lg:text-xl;
   }
 
   /* P (Default): 16px (LH 24px) -> 18px (LH 100%) */
   p,
   body {
-    @apply text-[16px] leading-[24px] lg:text-[18px] lg:leading-[100%] font-normal tracking-normal;
+    @apply text-base leading-6 font-normal tracking-normal lg:text-lg lg:leading-none;
   }
 }
