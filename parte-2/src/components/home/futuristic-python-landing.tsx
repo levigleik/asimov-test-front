@@ -1,8 +1,8 @@
 "use client";
 
 import { motion, useScroll, useSpring } from "framer-motion";
-import type { ComponentProps, ReactNode } from "react";
-import { useState } from "react";
+import type { ComponentProps, ReactNode, RefObject } from "react";
+import { useRef, useState } from "react";
 
 const navItems = [
   { label: "Trilha", href: "#trilha" },
@@ -177,6 +177,126 @@ function BootTerminal() {
   );
 }
 
+function FlightPlan() {
+  return (
+    <div className="border-neon bg-panel rounded-lg p-4 md:p-5">
+      <div className="mb-4 flex items-center justify-between">
+        <span className="font-mono text-xs uppercase tracking-[0.22em] text-cyan-300">
+          plano de voo
+        </span>
+        <span className="rounded-md bg-primary px-2 py-1 font-mono text-xs font-bold text-black">
+          84%
+        </span>
+      </div>
+      <div className="space-y-3">
+        {modules.map((module, index) => (
+          <div
+            key={module}
+            className="grid grid-cols-[104px_1fr] items-center gap-3"
+          >
+            <span className="truncate font-mono text-xs text-white/62">
+              {module}
+            </span>
+            <span className="h-2 overflow-hidden rounded-full bg-white/10">
+              <motion.span
+                className="block h-full rounded-full bg-[linear-gradient(90deg,var(--primary),#22d3ee,#f472b6)]"
+                initial={{ width: 0 }}
+                whileInView={{ width: `${58 + index * 6}%` }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.9, delay: 0.25 + index * 0.08 }}
+              />
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DraggablePanel({
+  children,
+  className,
+  floatY,
+  floatRotate,
+  constraintsRef,
+}: {
+  children: ReactNode;
+  className: string;
+  floatY: number;
+  floatRotate: number;
+  constraintsRef: RefObject<HTMLDivElement | null>;
+}) {
+  const [isDragging, setIsDragging] = useState(false);
+
+  return (
+    <motion.div
+      drag
+      dragConstraints={constraintsRef}
+      dragElastic={0}
+      dragMomentum
+      dragTransition={{
+        bounceStiffness: 720,
+        bounceDamping: 18,
+        power: 0.78,
+        timeConstant: 430,
+        restDelta: 0.4,
+      }}
+      onDragStart={() => setIsDragging(true)}
+      onDragEnd={() => setIsDragging(false)}
+      whileDrag={{
+        scale: 1.045,
+        rotate: 0,
+        boxShadow: "0 36px 110px rgba(34, 211, 238, 0.22)",
+      }}
+      className={`${className} pointer-events-auto z-[1001] touch-none select-none cursor-grab active:cursor-grabbing`}
+    >
+      <motion.div
+        animate={
+          isDragging
+            ? { y: 0, rotate: 0 }
+            : { y: [0, floatY, 0], rotate: [0, floatRotate, 0] }
+        }
+        transition={
+          isDragging
+            ? { duration: 0.18 }
+            : { duration: 6.5, repeat: Infinity, ease: "easeInOut" }
+        }
+      >
+        {children}
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function FloatingLearningPanels() {
+  const constraintsRef = useRef<HTMLDivElement | null>(null);
+
+  return (
+    <div
+      ref={constraintsRef}
+      className="pointer-events-none fixed inset-3 z-[1000]"
+    >
+      <DraggablePanel
+        className="absolute top-28 left-0 w-[min(430px,calc(100vw-1.5rem))] lg:top-36 lg:left-[calc(50%+1.5rem)]"
+        floatY={-16}
+        floatRotate={1.5}
+        constraintsRef={constraintsRef}
+      >
+        <BootTerminal />
+      </DraggablePanel>
+
+      <DraggablePanel
+        className="absolute top-[min(24rem,calc(100svh-18rem))] right-0 w-[min(460px,calc(100vw-1.5rem))] md:right-[max(0rem,calc((100vw-1180px)/2))]"
+        floatY={14}
+        floatRotate={-1.2}
+        constraintsRef={constraintsRef}
+      >
+        <FlightPlan />
+      </DraggablePanel>
+    </div>
+  );
+}
+
 function HeroVisual() {
   return (
     <motion.div
@@ -200,52 +320,6 @@ function HeroVisual() {
       </div>
 
       <motion.div
-        animate={{ y: [0, -16, 0], rotate: [0, 1.5, 0] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute left-0 top-24 w-[68%] max-w-[430px] md:left-4"
-      >
-        <BootTerminal />
-      </motion.div>
-
-      <motion.div
-        animate={{ y: [0, 14, 0], rotate: [0, -1.2, 0] }}
-        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute bottom-12 right-0 w-[78%] max-w-[460px]"
-      >
-        <div className="border-neon bg-panel rounded-lg p-4 md:p-5">
-          <div className="mb-4 flex items-center justify-between">
-            <span className="font-mono text-xs uppercase tracking-[0.22em] text-cyan-300">
-              plano de voo
-            </span>
-            <span className="rounded-md bg-primary px-2 py-1 font-mono text-xs font-bold text-black">
-              84%
-            </span>
-          </div>
-          <div className="space-y-3">
-            {modules.map((module, index) => (
-              <div
-                key={module}
-                className="grid grid-cols-[104px_1fr] items-center gap-3"
-              >
-                <span className="truncate font-mono text-xs text-white/62">
-                  {module}
-                </span>
-                <span className="h-2 overflow-hidden rounded-full bg-white/10">
-                  <motion.span
-                    className="block h-full rounded-full bg-[linear-gradient(90deg,var(--primary),#22d3ee,#f472b6)]"
-                    initial={{ width: 0 }}
-                    whileInView={{ width: `${58 + index * 6}%` }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.9, delay: 0.25 + index * 0.08 }}
-                  />
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </motion.div>
-
-      <motion.div
         animate={{ rotate: 360 }}
         transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
         className="absolute right-[8%] top-[33%] hidden h-40 w-40 rounded-full border border-dashed border-cyan-300/40 md:block"
@@ -266,11 +340,12 @@ export function FuturisticPythonLanding() {
   });
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-background text-white">
+    <main className="relative min-h-screen overflow-x-hidden bg-background text-white">
       <motion.div
         className="fixed left-0 right-0 top-0 z-50 h-1 origin-left bg-[linear-gradient(90deg,var(--primary),#22d3ee,#f472b6)]"
         style={{ scaleX: smoothProgress }}
       />
+      <FloatingLearningPanels />
 
       <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,rgba(34,211,238,0.16),transparent_34%),linear-gradient(180deg,#05070a_0%,#070b0f_45%,#030405_100%)]" />
       <div className="tech-grid fixed inset-0 -z-10 opacity-55" />
