@@ -8,9 +8,9 @@ const spaceGroteskSans = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Curso de Python com IA | Aprenda do zero com projetos reais",
+  title: "Asimov Lab | Curso futurista de Python com IA",
   description:
-    "Aprenda Python do zero com um curso prático, projetos reais com IA, suporte da comunidade e certificado reconhecido pelo mercado.",
+    "Uma landing page futurista para aprender Python do zero, construir automações, dados, agentes de IA e projetos reais.",
 };
 
 export default function RootLayout({
