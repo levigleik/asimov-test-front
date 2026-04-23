@@ -203,7 +203,13 @@ function WindowDots({ onClose }: { onClose?: () => void }) {
   );
 }
 
-function BootTerminal({ onClose }: { onClose?: () => void }) {
+function BootTerminal({
+  onClose,
+  skipIntro = false,
+}: {
+  onClose?: () => void;
+  skipIntro?: boolean;
+}) {
   const [commandIndex, setCommandIndex] = useState(0);
   const [visibleChars, setVisibleChars] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -244,9 +250,13 @@ function BootTerminal({ onClose }: { onClose?: () => void }) {
         {terminalLines.map((line, index) => (
           <motion.div
             key={line}
-            initial={{ opacity: 0, x: -12 }}
+            initial={skipIntro ? false : { opacity: 0, x: -12 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.55 + index * 0.18, duration: 0.45 }}
+            transition={
+              skipIntro
+                ? { duration: 0 }
+                : { delay: 0.55 + index * 0.18, duration: 0.45 }
+            }
             className="flex gap-3"
           >
             <span className="text-primary">&gt;</span>
@@ -279,7 +289,13 @@ function BootTerminal({ onClose }: { onClose?: () => void }) {
   );
 }
 
-function FlightPlan({ onClose }: { onClose?: () => void }) {
+function FlightPlan({
+  onClose,
+  skipIntro = false,
+}: {
+  onClose?: () => void;
+  skipIntro?: boolean;
+}) {
   return (
     <div className="border-neon bg-panel overflow-hidden rounded-lg">
       <div className="flex items-center justify-between border-b border-white/10 px-4 py-3 md:px-5">
@@ -305,10 +321,19 @@ function FlightPlan({ onClose }: { onClose?: () => void }) {
             <span className="h-2 overflow-hidden rounded-full bg-white/10">
               <motion.span
                 className="block h-full rounded-full bg-[linear-gradient(90deg,var(--primary),#22d3ee,#f472b6)]"
-                initial={{ width: 0 }}
-                whileInView={{ width: `${58 + index * 6}%` }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.9, delay: 0.25 + index * 0.08 }}
+                initial={skipIntro ? false : { width: 0 }}
+                animate={
+                  skipIntro ? { width: `${58 + index * 6}%` } : undefined
+                }
+                whileInView={
+                  skipIntro ? undefined : { width: `${58 + index * 6}%` }
+                }
+                viewport={skipIntro ? undefined : { once: true }}
+                transition={
+                  skipIntro
+                    ? { duration: 0 }
+                    : { duration: 0.9, delay: 0.25 + index * 0.08 }
+                }
               />
             </span>
           </div>
@@ -541,7 +566,7 @@ function FloatingLearningPanels({
           position={panels.terminal}
           onReset={onReset}
         >
-          <BootTerminal onClose={() => onReset("terminal")} />
+          <BootTerminal onClose={() => onReset("terminal")} skipIntro />
         </FixedDraggablePanel>
       ) : null}
 
@@ -555,7 +580,7 @@ function FloatingLearningPanels({
           position={panels.flight}
           onReset={onReset}
         >
-          <FlightPlan onClose={() => onReset("flight")} />
+          <FlightPlan onClose={() => onReset("flight")} skipIntro />
         </FixedDraggablePanel>
       ) : null}
     </div>
