@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Space_Grotesk } from "next/font/google";
+import { LenisProvider } from "@/components/lenis-provider";
 import "./globals.css";
 
 const spaceGroteskSans = Space_Grotesk({
@@ -24,7 +25,7 @@ export default function RootLayout({
       className={`${spaceGroteskSans.className} h-full antialiased`}
     >
       <body className="min-h-screen w-full bg-background text-foreground">
-        {children}
+        <LenisProvider>{children}</LenisProvider>
       </body>
     </html>
   );
