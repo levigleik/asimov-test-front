@@ -24,6 +24,10 @@ body {
   overflow-x: hidden;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 @layer base {
   h1 {
     @apply text-[43px] font-medium tracking-normal lg:text-6xl lg:leading-none;
