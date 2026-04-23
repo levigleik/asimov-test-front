@@ -2,7 +2,7 @@
 
 import { motion, useScroll, useSpring } from "framer-motion";
 import type { ComponentProps, ReactNode, RefObject } from "react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const navItems = [
   { label: "Trilha", href: "#trilha" },
@@ -86,10 +86,58 @@ const terminalLines = [
   "from asimov import carreira",
   "aluno = carreira.iniciar('python + ia')",
   "aluno.criar('agente_de_documentos')",
-  "aluno.publicar_portfolio(status='contratavel')",
+];
+
+const typingCommands = [
+  "portfolio.deploy(destino='mercado')",
+  "agente.treinar(com='documentos')",
+  "automacao.rodar(planilhas=True)",
+  "dashboard.publicar(status='online')",
 ];
 
 type MotionDivProps = ComponentProps<typeof motion.div>;
+type FloatingPanelId = "terminal" | "flight";
+type FloatingPanelPosition = {
+  left: number;
+  top: number;
+};
+type FloatingPanelState = Record<FloatingPanelId, FloatingPanelPosition | null>;
+
+const DRAG_ACTIVATION_DISTANCE = 8;
+const VIEWPORT_SAFE_INSET = 12;
+
+function getDragDistance(offset: { x: number; y: number }) {
+  return Math.hypot(offset.x, offset.y);
+}
+
+function clampPanelPosition(rect: DOMRect) {
+  return {
+    left:
+      Math.min(
+        Math.max(rect.left, VIEWPORT_SAFE_INSET),
+        window.innerWidth - rect.width - VIEWPORT_SAFE_INSET,
+      ) - VIEWPORT_SAFE_INSET,
+    top:
+      Math.min(
+        Math.max(rect.top, VIEWPORT_SAFE_INSET),
+        window.innerHeight - rect.height - VIEWPORT_SAFE_INSET,
+      ) - VIEWPORT_SAFE_INSET,
+  };
+}
+
+function clampDraggedPanelPosition(
+  rect: DOMRect,
+  offset: { x: number; y: number },
+) {
+  const finalRect = {
+    left: rect.left + offset.x,
+    top: rect.top + offset.y,
+    width: rect.width,
+    height: rect.height,
+  } as DOMRect;
+
+  return clampPanelPosition(finalRect);
+}
 
 function Reveal({
   children,
@@ -136,15 +184,58 @@ function SectionHeader({
   );
 }
 
-function BootTerminal() {
+function WindowDots({ onClose }: { onClose?: () => void }) {
+  return (
+    <div className="flex gap-2">
+      <button
+        type="button"
+        onClick={(event) => {
+          event.stopPropagation();
+          onClose?.();
+        }}
+        aria-label="Voltar card para o local inicial"
+        className="h-[11.5px] w-[11.5px] rounded-full bg-[#ff5f57] transition hover:scale-125 hover:shadow-[0_0_14px_rgba(255,95,87,0.9)]"
+        style={{ cursor: onClose ? "pointer" : "grab" }}
+      />
+      <span className="h-[11.5px] w-[11.5px] rounded-full bg-[#ffbd2e]" />
+      <span className="h-[11.5px] w-[11.5px] rounded-full bg-primary" />
+    </div>
+  );
+}
+
+function BootTerminal({ onClose }: { onClose?: () => void }) {
+  const [commandIndex, setCommandIndex] = useState(0);
+  const [visibleChars, setVisibleChars] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const currentCommand = typingCommands[commandIndex];
+
+  useEffect(() => {
+    const atFullCommand = visibleChars === currentCommand.length;
+    const atEmptyCommand = visibleChars === 0;
+    const delay = isDeleting ? 21 : atFullCommand ? 770 : 38;
+
+    const timeout = window.setTimeout(() => {
+      if (atFullCommand && !isDeleting) {
+        setIsDeleting(true);
+        return;
+      }
+
+      if (atEmptyCommand && isDeleting) {
+        setIsDeleting(false);
+        setCommandIndex((index) => (index + 1) % typingCommands.length);
+        return;
+      }
+
+      setVisibleChars((chars) => chars + (isDeleting ? -1 : 1));
+    }, delay);
+
+    return () => window.clearTimeout(timeout);
+  }, [currentCommand.length, isDeleting, visibleChars]);
+
   return (
     <div className="border-neon bg-panel relative overflow-hidden rounded-lg">
       <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
-        <div className="flex gap-2">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#ffbd2e]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-primary" />
-        </div>
+        <WindowDots onClose={onClose} />
         <span className="font-mono text-xs uppercase tracking-[0.2em] text-white/42">
           python-lab.py
         </span>
@@ -167,28 +258,42 @@ function BootTerminal() {
             </span>
           </motion.div>
         ))}
-        <motion.div
-          animate={{ opacity: [0.25, 1, 0.25] }}
-          transition={{ duration: 1.1, repeat: Infinity }}
-          className="h-5 w-2 bg-primary"
-        />
+        <div className="flex items-start min-h-6 gap-3">
+          <span className="text-primary">&gt;</span>
+          <span className="break-all flex items-start">
+            <span className="text-fuchsia-300">
+              {currentCommand.slice(0, visibleChars).split("(")[0]}
+            </span>
+            {currentCommand.slice(0, visibleChars).includes("(")
+              ? `(${currentCommand.slice(0, visibleChars).split("(").slice(1).join("(")}`
+              : ""}
+            <motion.span
+              animate={{ opacity: [0.2, 1, 0.2] }}
+              transition={{ duration: 0.75, repeat: Infinity }}
+              className="ml-1 inline-block h-5 w-2 translate-y-1 bg-primary"
+            />
+          </span>
+        </div>
       </div>
     </div>
   );
 }
 
-function FlightPlan() {
+function FlightPlan({ onClose }: { onClose?: () => void }) {
   return (
-    <div className="border-neon bg-panel rounded-lg p-4 md:p-5">
-      <div className="mb-4 flex items-center justify-between">
-        <span className="font-mono text-xs uppercase tracking-[0.22em] text-cyan-300">
-          plano de voo
-        </span>
+    <div className="border-neon bg-panel overflow-hidden rounded-lg">
+      <div className="flex items-center justify-between border-b border-white/10 px-4 py-3 md:px-5">
+        <div className="flex items-center gap-3">
+          <WindowDots onClose={onClose} />
+          <span className="font-mono text-xs uppercase tracking-[0.22em] text-cyan-300">
+            plano de voo
+          </span>
+        </div>
         <span className="rounded-md bg-primary px-2 py-1 font-mono text-xs font-bold text-black">
           84%
         </span>
       </div>
-      <div className="space-y-3">
+      <div className="space-y-3 p-4 md:p-5">
         {modules.map((module, index) => (
           <div
             key={module}
@@ -213,20 +318,76 @@ function FlightPlan() {
   );
 }
 
-function DraggablePanel({
+function PanelFloat({
+  children,
+  isDragging,
+  floatY,
+  floatRotate,
+}: {
+  children: ReactNode;
+  isDragging: boolean;
+  floatY: number;
+  floatRotate: number;
+}) {
+  return (
+    <motion.div
+      animate={
+        isDragging
+          ? { y: 0, rotate: 0 }
+          : { y: [0, floatY, 0], rotate: [0, floatRotate, 0] }
+      }
+      transition={
+        isDragging
+          ? { duration: 0.18 }
+          : { duration: 6.5, repeat: Infinity, ease: "easeInOut" }
+      }
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function FollowMouseTooltip({
+  position,
+  children,
+}: {
+  position: { x: number; y: number };
+  children: ReactNode;
+}) {
+  return (
+    <div
+      className="pointer-events-none absolute z-20 rounded-md border border-primary/30 bg-black/78 px-3 py-2 font-mono text-[11px] leading-4 text-white/78 shadow-[0_0_24px_rgba(133,251,69,0.16)] backdrop-blur"
+      style={{
+        left: position.x,
+        top: position.y,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function FixedDraggablePanel({
+  id,
   children,
   className,
   floatY,
   floatRotate,
   constraintsRef,
+  position,
+  onReset,
 }: {
+  id: FloatingPanelId;
   children: ReactNode;
   className: string;
   floatY: number;
   floatRotate: number;
   constraintsRef: RefObject<HTMLDivElement | null>;
+  position: FloatingPanelPosition;
+  onReset: (id: FloatingPanelId) => void;
 }) {
   const [isDragging, setIsDragging] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 18, y: 18 });
 
   return (
     <motion.div
@@ -243,32 +404,126 @@ function DraggablePanel({
       }}
       onDragStart={() => setIsDragging(true)}
       onDragEnd={() => setIsDragging(false)}
+      onContextMenu={(event) => {
+        event.preventDefault();
+        onReset(id);
+      }}
+      onPointerMove={(event) => {
+        const rect = event.currentTarget.getBoundingClientRect();
+        setTooltipPosition({
+          x: event.clientX - rect.left + 14,
+          y: event.clientY - rect.top + 14,
+        });
+      }}
+      style={{ left: position.left, top: position.top }}
       whileDrag={{
         scale: 1.045,
         rotate: 0,
         boxShadow: "0 36px 110px rgba(34, 211, 238, 0.22)",
       }}
-      className={`${className} pointer-events-auto z-[1001] touch-none select-none cursor-grab active:cursor-grabbing`}
+      className={`${className} absolute pointer-events-auto z-[1001] touch-none select-none cursor-grab active:cursor-grabbing`}
     >
-      <motion.div
-        animate={
-          isDragging
-            ? { y: 0, rotate: 0 }
-            : { y: [0, floatY, 0], rotate: [0, floatRotate, 0] }
-        }
-        transition={
-          isDragging
-            ? { duration: 0.18 }
-            : { duration: 6.5, repeat: Infinity, ease: "easeInOut" }
-        }
+      <FollowMouseTooltip position={tooltipPosition}>
+        Clique direito ou bolinha vermelha para voltar
+      </FollowMouseTooltip>
+      <PanelFloat
+        isDragging={isDragging}
+        floatY={floatY}
+        floatRotate={floatRotate}
       >
         {children}
-      </motion.div>
+      </PanelFloat>
     </motion.div>
   );
 }
 
-function FloatingLearningPanels() {
+function DockedDraggablePanel({
+  id,
+  children,
+  className,
+  floatY,
+  floatRotate,
+  onActivate,
+}: {
+  id: FloatingPanelId;
+  children: ReactNode;
+  className: string;
+  floatY: number;
+  floatRotate: number;
+  onActivate: (id: FloatingPanelId, position: FloatingPanelPosition) => void;
+}) {
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const dragStartRectRef = useRef<DOMRect | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 18, y: 18 });
+
+  return (
+    <motion.div
+      ref={panelRef}
+      drag
+      dragElastic={0}
+      dragMomentum={false}
+      dragSnapToOrigin
+      onPointerEnter={() => setIsHovering(true)}
+      onPointerLeave={() => setIsHovering(false)}
+      onPointerMove={(event) => {
+        const rect = event.currentTarget.getBoundingClientRect();
+        setTooltipPosition({
+          x: event.clientX - rect.left + 14,
+          y: event.clientY - rect.top + 14,
+        });
+      }}
+      onDragStart={() => {
+        setIsDragging(true);
+        dragStartRectRef.current =
+          panelRef.current?.getBoundingClientRect() ?? null;
+      }}
+      onDragEnd={(_, info) => {
+        setIsDragging(false);
+
+        if (
+          getDragDistance(info.offset) <= DRAG_ACTIVATION_DISTANCE ||
+          !dragStartRectRef.current
+        ) {
+          return;
+        }
+
+        onActivate(
+          id,
+          clampDraggedPanelPosition(dragStartRectRef.current, info.offset),
+        );
+      }}
+      whileDrag={{
+        scale: 1.045,
+        rotate: 0,
+        boxShadow: "0 36px 110px rgba(34, 211, 238, 0.22)",
+      }}
+      className={`${className} z-[30] touch-none select-none cursor-grab active:cursor-grabbing`}
+    >
+      {isHovering ? (
+        <FollowMouseTooltip position={tooltipPosition}>
+          pode me arrastar ;)
+        </FollowMouseTooltip>
+      ) : null}
+      <PanelFloat
+        isDragging={isDragging}
+        floatY={floatY}
+        floatRotate={floatRotate}
+      >
+        {children}
+      </PanelFloat>
+    </motion.div>
+  );
+}
+
+function FloatingLearningPanels({
+  panels,
+  onReset,
+}: {
+  panels: FloatingPanelState;
+  onReset: (id: FloatingPanelId) => void;
+}) {
   const constraintsRef = useRef<HTMLDivElement | null>(null);
 
   return (
@@ -276,28 +531,47 @@ function FloatingLearningPanels() {
       ref={constraintsRef}
       className="pointer-events-none fixed inset-3 z-[1000]"
     >
-      <DraggablePanel
-        className="absolute top-28 left-0 w-[min(430px,calc(100vw-1.5rem))] lg:top-36 lg:left-[calc(50%+1.5rem)]"
-        floatY={-16}
-        floatRotate={1.5}
-        constraintsRef={constraintsRef}
-      >
-        <BootTerminal />
-      </DraggablePanel>
+      {panels.terminal ? (
+        <FixedDraggablePanel
+          id="terminal"
+          className="w-[min(430px,calc(100vw-1.5rem))]"
+          floatY={-16}
+          floatRotate={1.5}
+          constraintsRef={constraintsRef}
+          position={panels.terminal}
+          onReset={onReset}
+        >
+          <BootTerminal onClose={() => onReset("terminal")} />
+        </FixedDraggablePanel>
+      ) : null}
 
-      <DraggablePanel
-        className="absolute top-[min(24rem,calc(100svh-18rem))] right-0 w-[min(460px,calc(100vw-1.5rem))] md:right-[max(0rem,calc((100vw-1180px)/2))]"
-        floatY={14}
-        floatRotate={-1.2}
-        constraintsRef={constraintsRef}
-      >
-        <FlightPlan />
-      </DraggablePanel>
+      {panels.flight ? (
+        <FixedDraggablePanel
+          id="flight"
+          className="w-[min(460px,calc(100vw-1.5rem))]"
+          floatY={14}
+          floatRotate={-1.2}
+          constraintsRef={constraintsRef}
+          position={panels.flight}
+          onReset={onReset}
+        >
+          <FlightPlan onClose={() => onReset("flight")} />
+        </FixedDraggablePanel>
+      ) : null}
     </div>
   );
 }
 
-function HeroVisual() {
+function HeroVisual({
+  floatingPanels,
+  onActivateFloating,
+}: {
+  floatingPanels: FloatingPanelState;
+  onActivateFloating: (
+    id: FloatingPanelId,
+    position: FloatingPanelPosition,
+  ) => void;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.92, rotateX: 12 }}
@@ -319,6 +593,30 @@ function HeroVisual() {
         <div className="absolute inset-0 scanline opacity-40" />
       </div>
 
+      {floatingPanels.terminal ? null : (
+        <DockedDraggablePanel
+          id="terminal"
+          className="absolute left-0 top-24 w-[68%] max-w-[430px] md:left-4"
+          floatY={-16}
+          floatRotate={1.5}
+          onActivate={onActivateFloating}
+        >
+          <BootTerminal />
+        </DockedDraggablePanel>
+      )}
+
+      {floatingPanels.flight ? null : (
+        <DockedDraggablePanel
+          id="flight"
+          className="absolute right-0 bottom-12 w-[78%] max-w-[460px]"
+          floatY={14}
+          floatRotate={-1.2}
+          onActivate={onActivateFloating}
+        >
+          <FlightPlan />
+        </DockedDraggablePanel>
+      )}
+
       <motion.div
         animate={{ rotate: 360 }}
         transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
@@ -332,6 +630,10 @@ function HeroVisual() {
 
 export function FuturisticPythonLanding() {
   const [openFaq, setOpenFaq] = useState(0);
+  const [floatingPanels, setFloatingPanels] = useState<FloatingPanelState>({
+    terminal: null,
+    flight: null,
+  });
   const { scrollYProgress } = useScroll();
   const smoothProgress = useSpring(scrollYProgress, {
     stiffness: 120,
@@ -339,13 +641,27 @@ export function FuturisticPythonLanding() {
     restDelta: 0.001,
   });
 
+  const activateFloatingPanel = (
+    id: FloatingPanelId,
+    position: FloatingPanelPosition,
+  ) => {
+    setFloatingPanels((panels) => ({ ...panels, [id]: position }));
+  };
+
+  const resetFloatingPanel = (id: FloatingPanelId) => {
+    setFloatingPanels((panels) => ({ ...panels, [id]: null }));
+  };
+
   return (
     <main className="relative min-h-screen overflow-x-hidden bg-background text-white">
       <motion.div
         className="fixed left-0 right-0 top-0 z-50 h-1 origin-left bg-[linear-gradient(90deg,var(--primary),#22d3ee,#f472b6)]"
         style={{ scaleX: smoothProgress }}
       />
-      <FloatingLearningPanels />
+      <FloatingLearningPanels
+        panels={floatingPanels}
+        onReset={resetFloatingPanel}
+      />
 
       <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,rgba(34,211,238,0.16),transparent_34%),linear-gradient(180deg,#05070a_0%,#070b0f_45%,#030405_100%)]" />
       <div className="tech-grid fixed inset-0 -z-10 opacity-55" />
@@ -480,7 +796,10 @@ export function FuturisticPythonLanding() {
             </motion.div>
           </div>
 
-          <HeroVisual />
+          <HeroVisual
+            floatingPanels={floatingPanels}
+            onActivateFloating={activateFloatingPanel}
+          />
         </motion.div>
       </section>
 
