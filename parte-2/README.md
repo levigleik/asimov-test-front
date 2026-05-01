@@ -2,7 +2,7 @@
 
 Landing page desenvolvida em Next.js para apresentar um curso de Python com foco em prática, projetos reais e IA.
 
-[https://asimov-test-parte-1.vercel.app](https://asimov-test-parte-1.vercel.app/)
+[https://asimov-test-parte-2.vercel.app](https://asimov-test-parte-2.vercel.app/)
 
 ## Stack
 
