@@ -2,6 +2,9 @@
 
 Landing page desenvolvida com `Next.js 16`, `React 19`, `TypeScript` e `Tailwind CSS 4`.
 
+
+[https://asimov-test-parte-1.vercel.app](https://asimov-test-parte-1.vercel.app/)
+
 ## Visão Geral
 
 O projeto consiste em uma landing page composta pelas seguintes seções:
